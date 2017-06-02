@@ -63,8 +63,11 @@ class Node(object):
     def getParent(self):
         return (self.parent)
 
-    def addChildren(self, children):
-        self.children.append(children)
+    def addChildren(self, child):
+        self.children.append(child)
+
+    def setChildren(self, children):
+        self.children = children
 
     def getChildren(self):
         return (self.children)
@@ -107,9 +110,18 @@ class Tree(object):
                 return_node_list.append(node)
         return (return_node_list)
 
+    def getNodeListWithNoChildren(self):
+        node_list        = self.getNodeList()
+        return_node_list = []
+        for node in node_list:
+            children = node.getChildren()
+            if (children==[]):
+                return_node_list.append(node)
+        return (return_node_list)
+
     def build(self, inputs, Function, width=None, depth=None, number_of_node=10):
         # set root
-        f_name, n_arg, f = Function.getRandomFunction()
+        f_name, n_arg, f = Function.getRandomFunction(not_arg_zero=True)
         root             = Node()
         root.setNodeId("0")
         root.setFunction(f_name, n_arg, f)
@@ -121,8 +133,8 @@ class Tree(object):
             DONE  = True
         else:
             DONE  = False
-        number_of_node = len(inputs)*number_of_node
         n_node    = random.randint(1, len(inputs)*number_of_node)
+        number_of_node = len(inputs)*n_node
         node_list = self.getNodeList()
         i         = 0
         while (not(DONE)):
@@ -138,20 +150,18 @@ class Tree(object):
                 cur_node.addChildren(new_node)
                 self.addNodeList(new_node)
             else:
-                i += 1
                 if (i==number_of_node):
                     DONE = True
+                i += 1
         # set 'x' or 'c' to build tree
-        node_list = self.getNodeList()
+        node_list = self.getNodeListWithNoChildren()
         for node in node_list:
-            children = node.getChildren()
-            if (len(children)==0):
-                r = random.randint(0, 1)
-                l = self.getNodeListByFunction('x')
-                if (r==0 or len(l)<len(inputs)):
-                    node.setFunction('x', 0, None)
-                else:
-                    node.setFunction('c', 0, None)
+            r = random.randint(0, 1)
+            l = self.getNodeListByFunction('x')
+            if (len(l)<len(inputs) or r==0):
+                node.setFunction('x', 0, None)
+            else:
+                node.setFunction('c', 0, None)
 
     def show(self):
         print("root: "     , self.root)
@@ -171,7 +181,7 @@ if __name__ == "__main__":
     function.createFunction('/', 2, lambda a:a[0]/a[1] if a[1]!=0 else 0)
     function.show()
     
-    inputs    = [i for i in range(1)]
+    inputs    = [i for i in range(2)]
     tree.build(inputs, function)
     node_list = tree.getNodeList()
     x_nodes   = tree.getNodeListByFunction('x')
