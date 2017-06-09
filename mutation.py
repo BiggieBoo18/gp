@@ -1,74 +1,61 @@
-#coding: utf-8
-
-import os
-import copy
-import numpy        as np
-import numpy.random as npr
-from individual  import Individual
-from population  import Population
+import random
+from   node   import Node
+from   config import get_functions, get_registers
 
 class Mutation(object):
-    """
-    Mutation Class
-    """
     @classmethod
-    def mutation(self, children, mrate, dataset):
-        """
-        Mutation children par child
-
-        [imagine]
-        child [0, 1, 0] => mutation => mutated child [0, 1, 1]
-        
-        [example]
-        Mutation.mutation(children) => [mutated children for individuals size]
-
-        :param list[Individual] children: crossover children
-        :param float mrate: probability of mutation
-        :param list[] dataset: prepared dataset
-        :returns: mutated children
-        :rtype:   list[Individual]
-        """
-        for child in children:
-            if (mrate>npr.random()):
-                gene     = child.getGene()
-                n_random = npr.choice(list(range(len(gene))))
-                idx      = npr.choice(list(range(len(gene))), n_random, replace=False)
-                for i in idx:
-                    swap_gene = npr.choice(dataset) # duplicate
-                    gene[i] = swap_gene
-        return (children)
+    def mutation(self, child, mutate_rate):
+        if (random.random()<mutate_rate):
+            child_gene = child.getGene()
+            r = random.random()
+            if (r<0.3):                                    # swap
+                new_node   = Node()
+                new_node.createNode(function=get_functions(), registers=get_registers())
+                child_gene = child.getGene()
+                point = random.choice(range(len(child_gene)))
+                child_gene[point] = new_node
+            elif (r>0.3 and r<0.6 and len(child_gene)!=1): # remove
+                point = random.choice(range(len(child_gene)))
+                child_gene.pop(point)
+            else:                                          # insert
+                new_node   = Node()
+                new_node.createNode(function=get_functions(), registers=get_registers())
+                child_gene = child.getGene()
+                point = random.choice(range(len(child_gene)))
+                child_gene.insert(point, new_node)
+        return(child)
 
 if __name__ == "__main__":
-    from readDataset import readDataset
-    from individual  import Individual
-    from select      import Select
-    from crossover   import Crossover
-    dataset = readDataset("./dataset/binary.txt")
-    population = Population()
-    for i in range(5):
-        ind = Individual()
-        ind.createGene(dataset, 10)
-        population.addInd(ind)
+    from config     import get_functions, get_registers, get_constants
+    from population import Population
+    from selection  import Selection
+    from crossover  import Crossover
+    inputs = [[0,0],[0,1],[1,0], [1,1]]
 
-    def evaluate(ind):
-        fitness = sum(ind)
-        return (fitness)
+    ppl = Population()
 
-    population.calcFitness(evaluate)
-    population.show()
-    parents  = Select.Tournament(population, 5, 3, "max")
-    for ind in parents:
-        ind.show()
-    print("Onepoint")
-    children = Crossover.onePoint(parents, 5, 10, 0.7)
-    for ind in children:
-        ind.show()
-    print("Twopoints")
-    children = Crossover.twoPoints(parents, 5, 10, 0.7)
-    for ind in children:
-        ind.show()
-    print("Randompoints")
-    children = Crossover.randomPoints(parents, 5, 10, 0.7)
-    for ind in children:
-        ind.show()
-    Mutation.mutation(children, 0.7, dataset)
+    func       = get_functions()
+    constants  = get_constants(bit=True)
+    n_register = 10
+    n_ind      = 5
+    n_gene     = 5
+    ppl.createPopulation(functions=func, constants=constants, n_ind=5, n_gene=5, n_register=n_register)
+
+    eval_function = lambda x:x[0]^x[1] # xor
+    ppl.excute_all(inputs, eval_function)
+    
+    elite_size = 3
+    parents = Selection.elite(ppl, elite_size)
+
+    tourn_size = 3
+    for i in range(n_ind):
+        parent = Selection.tournament(ppl, tourn_size)
+        parents.append(parent)
+
+    cross_rate  = 0.7
+    child = Crossover.randomPoints(parents, cross_rate)
+
+    mutate_rate = 0.7 # for debug (In generary, set up like 0.05)
+    child.show()
+    child = Mutation.mutation(child,  mutate_rate)
+    child.show()
