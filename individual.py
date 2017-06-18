@@ -39,11 +39,12 @@ class Individual(object):
         mse    = 0
         for x in inputs: # input == ex.[[0,0], [0,1], [1,0], [0,0]]
             self.excute(x)
-            output  = self.registers['A'] # <!> output is 'A' register, othreway mean each register..
-            y       = eval_function(x)
-            mse    += (output-y)**2
-        mse = mse/n_data
-        self.setFitness(mse)
+            output = self.registers['A'] # <!> output is 'A' register, othreway mean each register..
+            y      = eval_function(x)
+            mse   += (output-y)**2
+        mse = mse/float(n_data)
+        fit = mse
+        self.setFitness(fit)
         
     def getRegisters(self):
         return (self.registers)

@@ -4,13 +4,13 @@ from   config import get_functions, get_registers
 
 class Mutation(object):
     @classmethod
-    def mutation(self, child, mutate_rate):
+    def mutation(self, child, mutate_rate, n_register):
         if (random.random()<mutate_rate):
             child_gene = child.getGene()
             r = random.random()
             if (r<0.3):                                    # swap
                 new_node   = Node()
-                new_node.createNode(function=get_functions(), registers=get_registers())
+                new_node.createNode(function=get_functions(), registers=get_registers(n_register))
                 child_gene = child.getGene()
                 point = random.choice(range(len(child_gene)))
                 child_gene[point] = new_node
@@ -19,7 +19,7 @@ class Mutation(object):
                 child_gene.pop(point)
             else:                                          # insert
                 new_node   = Node()
-                new_node.createNode(function=get_functions(), registers=get_registers())
+                new_node.createNode(function=get_functions(), registers=get_registers(n_register))
                 child_gene = child.getGene()
                 point = random.choice(range(len(child_gene)))
                 child_gene.insert(point, new_node)

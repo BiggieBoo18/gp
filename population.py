@@ -1,6 +1,7 @@
 import random
-from   individual import Individual
-from   config     import get_registers
+from   multiprocessing import Process
+from   individual      import Individual
+from   config          import get_registers
 
 class Population(object):
     def __init__(self):
@@ -19,7 +20,7 @@ class Population(object):
     def getPopulation(self):
         return (self.p)
 
-    def excute_all(self, inputs, eval_function, mode="min"):
+    def excute_all(self, inputs, eval_function, mode="min", worker=1):
         for ind in self.p:
             ind.calcFitness(inputs, eval_function)
         reverse = True
@@ -32,10 +33,18 @@ class Population(object):
 
     def result(self):
         for ind in self.p:
-            print("fitness:   ", ind.getFitness())
-            print("registers: ", ind.getRegisters())
+            print("fitness:   {0}".format(ind.getFitness()))
+            print("registers: {0}".format(ind.getRegisters()))
             for i, node in enumerate(ind.getGene()):
-                print("gene{0}:     ".format(i), node.getData())
+                print("gene{0}:     {1}".format(i, node.getData()))
+
+    def write_result(self, path):
+        wd = open(path, 'w')
+        for ind in self.p:
+            wd.write("fitness:   {0}\n".format(ind.getFitness()))
+            wd.write("registers: {0}\n".format(ind.getRegisters()))
+            for i, node in enumerate(ind.getGene()):
+                wd.write("gene{0}:     {1}\n".format(i, node.getData()))
 
 if __name__ == "__main__":
     from config   import get_functions, get_registers, get_constants

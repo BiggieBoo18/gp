@@ -1,12 +1,12 @@
 import random
 from   function import Function
 
-def get_registers(k=10):
+def get_registers(n_register=10):
     # A-Z, AB, CD, EF, GH, IJ, KL
     registers = {"".join(chr(i)):0 for i in range(65, 65+26)}
     for i in range(66, 66+12, 2):
         registers["".join([chr(i-1), chr(i)])] = 0
-    registers = {k:v for k, v in list(registers.items())[:10]}
+    registers = {k:v for k, v in list(registers.items())[:n_register]}
     if (not('A' in registers)):
         registers['A'] = 0
     return (registers)
