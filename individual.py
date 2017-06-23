@@ -22,7 +22,7 @@ class Individual(object):
         self.gene = []
         for i in range(n_gene):
             node = Node()
-            node.createNode(self.functions, self.registers, f_name=None)
+            node.createNode(self.functions, self.registers, self.constants, f_name=None)
             self.gene.append(node)
 
     def getGene(self):
@@ -55,15 +55,16 @@ class Individual(object):
             data = node.getData()
             operator = data[0]
             ops_keys = data[1]
+            save_to  = data[2] # save to register key
+            constant = data[3]
             ops = []
             for op_key in ops_keys: # ops_keys is register_keys or constants as 'c' or inputs as 'x'
                 if (op_key in self.registers):
                     ops.append(self.registers[op_key])
                 elif (op_key in self.constants):
-                    ops.append(self.constants[op_key]())
+                    ops.append(constant)
                 elif (op_key=='x'):
                     ops.append(random.choice(x))
-            save_to  = data[2]               # save to register key
             f_data   = functions[operator]
             function = f_data[1]             # function with lambda
             result   = function(ops)         # excute

@@ -1,14 +1,18 @@
 import random
+import itertools
 from   function import Function
 
 def get_registers(n_register=10):
     # A-Z, AB, CD, EF, GH, IJ, KL
-    registers = {"".join(chr(i)):0 for i in range(65, 65+26)}
-    for i in range(66, 66+12, 2):
-        registers["".join([chr(i-1), chr(i)])] = 0
-    registers = {k:v for k, v in list(registers.items())[:n_register]}
-    if (not('A' in registers)):
-        registers['A'] = 0
+    alphabet  = [chr(i) for i in range(65, 65+26)]
+    c         = n_register/26
+    registers = [alphabet]
+    cur       = alphabet
+    for i in range(c):
+        cur = registers[-1]
+        registers.append(["".join([i, j]) for i, j in list(itertools.product(cur, alphabet))])
+    registers = [reg for regs in registers for reg in regs][:n_register]
+    registers = {reg:0 for reg in registers}
     return (registers)
 
 def get_constants(lower=-10, upper=10, bit=False):
@@ -32,7 +36,7 @@ def get_functions():
     return (func)
 
 if __name__ == "__main__":
-    registers = get_registers()
+    registers = get_registers(30)
     print(registers)
     constant  = get_constants()
     print(constant, constant["c"]())

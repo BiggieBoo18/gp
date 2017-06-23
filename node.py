@@ -4,26 +4,29 @@ class Node(object):
     def __init__(self):
         self.data = [] # data in node
 
-    def createNode(self, function, registers, f_name=None):
+    def createNode(self, functions, registers, constants, f_name=None, ):
         """
         create a node
 
-        :param Function function: set up functions
-        :param list registers:    registers is save location for calculation result
-        :param str f_name:        function name
+        :param Function functions: set up functions
+        :param list registers:     registers is save location for calculation result
+        :param str f_name:         function name
         """
-        f = function.getFunction()
+        f = functions.getFunction()
         register_keys = list(registers.keys())
         if (f_name==None):
-            f_names = function.getKeys(not_zero=True)
-            f_name  = random.choice(f_names)
+            f_names   = functions.getKeys(not_zero=True)
+            f_name    = random.choice(f_names)
         if (register_keys==None):
-            operands = [random.choice(['x', 'c', 'A']) for i in range(f[f_name][0])]
-            register = 'A'
+            operands  = [random.choice(['x', 'c', 'A']) for i in range(f[f_name][0])]
+            register  = 'A'
         else:
-            operands = [random.choice(['x', 'c'] + register_keys) for i in range(f[f_name][0])]
-            register = random.choice(register_keys)
-        self.data = [f_name, operands, register]
+            operands  = [random.choice(['x', 'c'] + register_keys) for i in range(f[f_name][0])]
+            register  = random.choice(register_keys)
+        const = None
+        if ('c' in operands):
+            const     = constants['c']()
+        self.data = [f_name, operands, register, const]
         
     def getData(self):
         return (self.data)

@@ -23,9 +23,9 @@ path        = "./result/result.txt"
 
 # init
 ppl       = Population()
-func      = get_functions()
+functions = get_functions()
 constants = get_constants(lower=-10, upper=10, bit=True)
-ppl.createPopulation(functions=func, constants=constants, n_ind=n_ind, n_gene=n_gene, n_register=n_register)
+ppl.createPopulation(functions=functions, constants=constants, n_ind=n_ind, n_gene=n_gene, n_register=n_register)
 eval_function = lambda x:x[0]^x[1] # xor
 ppl.excute_all(inputs, eval_function)
 
@@ -40,7 +40,7 @@ for i in range(revolution):
         parent = Selection.tournament(ppl, tourn_size)
         elite.append(parent)
         child = Crossover.randomPoints(elite, cross_rate)
-        child = Mutation.mutation(child,  mutate_rate, n_register)
+        child = Mutation.mutation(child,  mutate_rate, n_register, functions, constants)
         new_p.append(child)
     ppl.setPopulation(new_p)
     ppl.excute_all(inputs, eval_function)
