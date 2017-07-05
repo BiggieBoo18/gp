@@ -11,8 +11,8 @@ from   progressbar import ProgressBar
 # config
 gc.enable()
 inputs = [[0,0], [0,1], [1,0], [1,1]]
-revolution  = 10000
-n_register  = 2
+revolution  = 300
+n_register  = 3
 n_ind       = 50
 n_gene      = 10
 elite_size  = 3
@@ -32,7 +32,7 @@ ppl.excute_all(inputs, eval_function)
 # revolution
 p = ProgressBar(0, revolution)
 for i in range(revolution):
-    #print("revolution: ", i)
+    print("revolution: ", i)
     p.update(i+1)
     elite = Selection.elite(ppl, elite_size)
     new_p = copy.deepcopy(elite)

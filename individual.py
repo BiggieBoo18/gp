@@ -1,3 +1,4 @@
+import copy
 import random
 from   config import get_registers
 from   node   import Node
@@ -38,8 +39,9 @@ class Individual(object):
         n_data = len(inputs)
         mse    = 0
         for x in inputs: # input == ex.[[0,0], [0,1], [1,0], [0,0]]
-            self.excute(x)
-            output = self.registers['A'] # <!> output is 'A' register, othreway mean each register..
+            ind = copy.copy(self)
+            ind.excute(x)
+            output = ind.registers['A'] # <!> output is 'A' register, othreway mean each register..
             y      = eval_function(x)
             mse   += (output-y)**2
         mse = mse/float(n_data)
@@ -51,6 +53,8 @@ class Individual(object):
     
     def excute(self, x):
         functions = self.functions.getFunction()
+        x_len     = len(x)
+        x_cur     = 0
         for node in self.gene:
             data = node.getData()
             operator = data[0]
@@ -58,13 +62,17 @@ class Individual(object):
             save_to  = data[2] # save to register key
             constant = data[3]
             ops = []
+            ops_append = ops.append
             for op_key in ops_keys: # ops_keys is register_keys or constants as 'c' or inputs as 'x'
                 if (op_key in self.registers):
-                    ops.append(self.registers[op_key])
+                    ops_append(self.registers[op_key])
                 elif (op_key in self.constants):
-                    ops.append(constant)
+                    ops_append(constant)
                 elif (op_key=='x'):
-                    ops.append(random.choice(x))
+                    ops_append(x[x_cur])
+                    x_cur += 1
+                    if (x_cur==x_len):
+                        x_cur = 0
             f_data   = functions[operator]
             function = f_data[1]             # function with lambda
             result   = function(ops)         # excute
