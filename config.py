@@ -5,7 +5,7 @@ from   function import Function
 def get_registers(n_register=10):
     # A-Z, AB, CD, EF, GH, IJ, KL
     alphabet  = [chr(i) for i in range(65, 65+26)]
-    c         = n_register/26
+    c         = int(n_register/26)
     registers = [alphabet]
     cur       = alphabet
     for i in range(c):

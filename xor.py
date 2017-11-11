@@ -32,7 +32,7 @@ ppl.excute_all(inputs, eval_function)
 # revolution
 p = ProgressBar(0, revolution)
 for i in range(revolution):
-    print("revolution: ", i)
+    #print("revolution: ", i)
     p.update(i+1)
     elite = Selection.elite(ppl, elite_size)
     new_p = copy.deepcopy(elite)
